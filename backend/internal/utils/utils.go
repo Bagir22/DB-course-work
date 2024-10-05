@@ -19,7 +19,7 @@ func VerifyPassword(password, hash string) bool {
 
 func ValidateUser(user types.UserLongData) bool {
 	if user.FirstName == "" || user.LastName == "" ||
-		user.Email == "" || user.Phone == 0 || user.DateOfBirth == "" ||
+		user.Email == "" || user.Phone == "" || user.DateOfBirth == "" ||
 		user.PassportNumber == 0 || user.PassportSerie == "" || user.Password == "" {
 		return false
 	}

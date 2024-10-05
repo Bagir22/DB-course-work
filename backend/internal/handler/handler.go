@@ -5,9 +5,11 @@ import (
 	"courseWork/internal/service"
 	"courseWork/internal/types"
 	"courseWork/internal/utils"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Handler struct {
@@ -22,6 +24,9 @@ func InitHandler(service service.Repository) *Handler {
 
 func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
+
+	router.Use(cors.Default())
+
 	router.POST("/signup", h.Signup)
 	router.POST("/login", h.Login)
 	return router
@@ -41,12 +46,27 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		}
 	*/
 
-	var user types.UserLongData
-	err := ctx.BindJSON(&user)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusBadRequest, types.Response{"Can't parse user", err.Error()})
+	var req types.SignupRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
+	}
+
+	passportNumber, err := strconv.Atoi(req.PassportNumber)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid passport number"})
+		return
+	}
+
+	user := types.UserLongData{
+		FirstName:      req.FirstName,
+		LastName:       req.LastName,
+		Email:          req.Email,
+		Phone:          req.Phone,
+		DateOfBirth:    req.DateOfBirth,
+		PassportSerie:  req.PassportSerie,
+		PassportNumber: passportNumber,
+		Password:       req.Password,
 	}
 
 	userResponse, err := h.service.AddUser(context.TODO(), user)
@@ -86,6 +106,8 @@ func (h *Handler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 		return
 	}
+
+	log.Println(token)
 
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
