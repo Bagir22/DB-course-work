@@ -111,7 +111,6 @@ github.com/lib/pq/scram
 github.com/mattn/go-isatty
 # github.com/mfridman/interpolate v0.0.2
 ## explicit; go 1.19
-github.com/mfridman/interpolate
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
 ## explicit
 github.com/modern-go/concurrent
@@ -127,18 +126,10 @@ github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
 # github.com/pressly/goose/v3 v3.22.1
 ## explicit; go 1.21.0
-github.com/pressly/goose/v3
-github.com/pressly/goose/v3/database
-github.com/pressly/goose/v3/internal/dialect
-github.com/pressly/goose/v3/internal/dialect/dialectquery
-github.com/pressly/goose/v3/internal/gooseutil
-github.com/pressly/goose/v3/internal/sqlparser
-github.com/pressly/goose/v3/lock
 # github.com/rogpeppe/go-internal v1.10.0
 ## explicit; go 1.19
 # github.com/sethvargo/go-retry v0.3.0
 ## explicit; go 1.21
-github.com/sethvargo/go-retry
 # github.com/twitchyliquid64/golang-asm v0.15.1
 ## explicit; go 1.13
 github.com/twitchyliquid64/golang-asm/asm/arch
@@ -163,12 +154,13 @@ github.com/twitchyliquid64/golang-asm/unsafeheader
 github.com/ugorji/go/codec
 # go.uber.org/multierr v1.11.0
 ## explicit; go 1.19
-go.uber.org/multierr
 # golang.org/x/arch v0.11.0
 ## explicit; go 1.18
 golang.org/x/arch/x86/x86asm
 # golang.org/x/crypto v0.28.0
 ## explicit; go 1.20
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
 golang.org/x/crypto/sha3
 # golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
 ## explicit; go 1.22.0
@@ -183,7 +175,6 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 # golang.org/x/sync v0.8.0
 ## explicit; go 1.18
-golang.org/x/sync/errgroup
 # golang.org/x/sys v0.26.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu

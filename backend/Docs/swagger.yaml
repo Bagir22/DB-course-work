@@ -6,6 +6,30 @@ servers:
   - url: http://localhost:8080/
     description: Dev server
 paths:
+  /signup:
+    post:
+      summary: Метод создания пользователя
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLongData"
+      responses:
+        '200':
+          description: Успешный ответ, данные добавленного пользователя
+          content:
+            applicataion/json:
+              schema:
+                $ref: "#/components/schemas/UserShortData"
+        'default':
+          description: Ошибка
+          content:
+            applicataion/json:
+              schema:
+                $ref: "#/components/schemas/Response"
   /login:
     post:
       summary: Метод авторизации пользователя
@@ -27,56 +51,6 @@ paths:
                 items:
                   oneOf:
                     - $ref: "#/components/schemas/UserShortData"
-        'default':
-          description: Ошибка
-          content:
-            applicataion/json:
-              schema:
-                $ref: "#/components/schemas/Response"
-  /signup:
-    post:
-      summary: Метод создания пользователя
-      tags:
-        - User
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserLongData"
-      responses:
-        '200':
-          description: Успешный ответ, данные добавленного пользователя
-          content:
-            applicataion/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: "#/components/schemas/UserShortData"
-        'default':
-          description: Ошибка
-          content:
-            applicataion/json:
-              schema:
-                $ref: "#/components/schemas/Response"
-  /:
-    get:
-      summary: Метод поиска авиабилетов
-      tags:
-        - Search
-      responses:
-        '200':
-          description: Успешный ответ, список полетов
-          content:
-            applicataion/json:
-              schema:
-                type: array
-                items:
-                  oneOf:
-                    - type: array
-                      items:
-                        $ref: "#/components/schemas/Flight"
         'default':
           description: Ошибка
           content:
@@ -119,9 +93,9 @@ components:
           type: string
           example: example@gmail.com
         phone:
-          type: integer
+          type: string
           example: 89021009988
-        date:
+        dateOfBirth:
           type: string
           format: date
           example: "2019-05-17"

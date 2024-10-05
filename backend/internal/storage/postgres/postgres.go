@@ -1,10 +1,14 @@
 package postgres
 
 import (
+	"context"
+	"courseWork/Database/Queries"
 	"courseWork/internal/config"
+	"courseWork/internal/types"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"log"
 )
 
 type Db struct {
@@ -32,4 +36,16 @@ func InitConn(cfg *config.Config) (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func (d *Db) AddUser(ctx context.Context, user types.UserLongData) (types.UserResponse, error) {
+	_, err := d.db.Exec(Queries.InsertUserQuery, user.FirstName, user.LastName,
+		user.Email, user.Phone, user.DateOfBirth, user.PassportSerie, user.PassportNumber, user.Password)
+
+	if err != nil {
+		log.Println("Add user to db err: ", err)
+		return types.UserResponse{}, err
+	}
+
+	return types.UserResponse{user.Email, user.Password}, nil
 }

@@ -60,13 +60,15 @@ create table if not exists "Passenger"
     id serial  primary key,
     firstName    varchar(50) not null,
     lastName    varchar(50) not null,
-    email    varchar(50) not null,
-    phone    varchar(20) not null,
+    email    varchar(50) unique not null,
+    phone    varchar(20) unique not null,
     dateOfBirth date not null,
     passportSerie varchar(10) not null,
     passportNumber varchar(10) not null,
-    password varchar(50) not null
+    password varchar(100) not null
 );
+
+alter table "Passenger" add constraint passport_unique unique ("passportSerie", "passportNumber");
 
 create type status as enum ('booked', 'paid', 'canceled', 'done');
 create type "row" as enum ('A', 'B', 'C', 'D', 'E', 'F');
