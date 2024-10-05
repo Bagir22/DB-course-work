@@ -1,8 +1,17 @@
 package types
 
+import "github.com/dgrijalva/jwt-go"
+
+var JwtSecret = []byte("SomeSecretKey")
+
 type Response struct {
 	Message     string `json:"message"`
 	Description any    `json:"description"`
+}
+
+type UserShortData struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserLongData struct {
@@ -19,4 +28,9 @@ type UserLongData struct {
 type UserResponse struct {
 	Email    string `json:"email" db:"email"`
 	Password string `json:"password" db:"password"`
+}
+
+type Claims struct {
+	Email string `json:"email"`
+	jwt.StandardClaims
 }

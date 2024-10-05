@@ -4,6 +4,7 @@ import (
 	"context"
 	"courseWork/internal/service"
 	"courseWork/internal/types"
+	"courseWork/internal/utils"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -22,6 +23,7 @@ func InitHandler(service service.Repository) *Handler {
 func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
 	router.POST("/signup", h.Signup)
+	router.POST("/login", h.Login)
 	return router
 }
 
@@ -55,4 +57,35 @@ func (h *Handler) Signup(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, userResponse)
 	return
+}
+
+func (h *Handler) Login(ctx *gin.Context) {
+	/*
+		{
+			"email": "example@gmail.com",
+			"password": "SomePassword"
+		}
+	*/
+
+	var user types.UserShortData
+	if err := ctx.BindJSON(&user); err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	user, err := h.service.CheckUserExist(user.Email, user.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.Email)
+	if err != nil {
+		log.Println("Error generating token:", err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }

@@ -49,3 +49,14 @@ func (d *Db) AddUser(ctx context.Context, user types.UserLongData) (types.UserRe
 
 	return types.UserResponse{user.Email, user.Password}, nil
 }
+
+func (d *Db) CheckUserExist(email string, password string) (types.UserShortData, error) {
+	var user types.UserShortData
+
+	err := d.db.QueryRow(Queries.CheckUserExistQuery, email).Scan(&user.Email, &user.Password)
+	if err != nil {
+		return types.UserShortData{}, err
+	}
+
+	return user, nil
+}

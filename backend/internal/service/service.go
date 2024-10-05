@@ -10,6 +10,7 @@ import (
 
 type Repository interface {
 	AddUser(ctx context.Context, user types.UserLongData) (types.UserResponse, error)
+	CheckUserExist(email string, password string) (types.UserShortData, error)
 }
 
 type Service struct {
@@ -41,4 +42,20 @@ func (s *Service) AddUser(ctx context.Context, user types.UserLongData) (types.U
 	}
 
 	return userResponse, nil
+}
+
+func (s *Service) CheckUserExist(email string, password string) (types.UserShortData, error) {
+	user, err := s.repo.CheckUserExist(email, password)
+
+	if err != nil {
+		log.Println(err)
+		return types.UserShortData{}, err
+	}
+	
+	validate := utils.VerifyPassword(password, user.Password)
+	if !validate {
+		return types.UserShortData{}, errors.New("Invalid password")
+	}
+
+	return user, nil
 }
