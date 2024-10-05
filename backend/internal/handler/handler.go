@@ -107,7 +107,5 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	log.Println(token)
-
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }

@@ -8,7 +8,7 @@ const Signup = () => {
     const [phone, setPhone] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState('');
     const [passportSerie, setPassportSerie] = useState('');
-    const [passportNumber, setPassportNumber] = useState(0);
+    const [passportNumber, setPassportNumber] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const Signup = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                alert(data.message);
+                alert("Success");
                 navigate('/login');
             } else {
                 const errorData = await response.json();
@@ -48,68 +48,104 @@ const Signup = () => {
     };
 
     return (
-        <div>
-            <h1>Signup</h1>
-            <form onSubmit={handleSignup}>
-                <input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="tel"
-                    placeholder="Phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                    pattern="[0-9]{10}"
-                    title="Введите номер телефона, состоящий из 10 цифр."
-                />
-                <input
-                    type="date"
-                    placeholder="Date of Birth"
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Passport Series"
-                    value={passportSerie}
-                    onChange={(e) => setPassportSerie(e.target.value)}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Passport Number"
-                    value={passportNumber}
-                    onChange={(e) => setPassportNumber(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">Signup</button>
+        <div className="container mt-5">
+            <h1 className="text-center mb-4" style={{fontFamily: "'Roboto', sans-serif"}}>
+                Signup
+            </h1>
+            <form onSubmit={handleSignup} className="mx-auto" style={{maxWidth: '400px'}}>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="First Name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Last Name"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="email"
+                        className="form-control"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="tel"
+                        className="form-control"
+                        placeholder="Phone"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        pattern="[0-9]{10}"
+                        title="Введите номер телефона, состоящий из 10 цифр."
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="date"
+                        className="form-control"
+                        placeholder="Date of Birth"
+                        value={dateOfBirth}
+                        onChange={(e) => setDateOfBirth(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Passport Series"
+                        value={passportSerie}
+                        onChange={(e) => setPassportSerie(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Passport Number"
+                        value={passportNumber}
+                        onChange={(e) => setPassportNumber(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="password"
+                        className="form-control"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        style={{fontFamily: "'Poppins', sans-serif"}}
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary w-100" style={{fontFamily: "'Poppins', sans-serif"}}>
+                    Signup
+                </button>
             </form>
         </div>
     );

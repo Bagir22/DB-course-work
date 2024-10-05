@@ -47,10 +47,7 @@ paths:
           content:
             applicataion/json:
               schema:
-                type: array
-                items:
-                  oneOf:
-                    - $ref: "#/components/schemas/UserShortData"
+                $ref: "#/components/schemas/Token"
         'default':
           description: Ошибка
           content:
@@ -150,3 +147,11 @@ components:
         description:
           type: string
           example: "Some error"
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          example: "Some token"

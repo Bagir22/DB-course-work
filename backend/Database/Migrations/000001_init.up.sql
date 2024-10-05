@@ -68,7 +68,7 @@ create table if not exists "Passenger"
     password varchar(100) not null
 );
 
-alter table "Passenger" add constraint passport_unique unique ("passportSerie", "passportNumber");
+alter table "Passenger" add constraint passport_unique unique (passportSerie, passportNumber);
 
 create type status as enum ('booked', 'paid', 'canceled', 'done');
 create type "row" as enum ('A', 'B', 'C', 'D', 'E', 'F');

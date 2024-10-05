@@ -1,0 +1,21 @@
+/* Header.css */
+@import "bootstrap";
+
+.header {
+    background-color: #155dcc; /* Цвет фона */
+    color: white;           /* Цвет текста */
+    padding: 10px;         /* Отступы */
+    display: flex;         /* Используем flexbox для выравнивания */
+    justify-content: space-between; /* Выравнивание по краям */
+    align-items: center;   /* Центрирование по вертикали */
+}
+
+.header a {
+    color: white;          /* Цвет текста для ссылок */
+    margin-right: 10px;   /* Отступы между ссылками */
+    text-decoration: none; /* Убираем подчеркивание */
+}
+
+.header a:hover {
+    text-decoration: underline; /* Подчеркивание при наведении */
+}
