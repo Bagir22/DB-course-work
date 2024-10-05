@@ -6,11 +6,13 @@ import (
 	"courseWork/internal/utils"
 	"errors"
 	"log"
+	"time"
 )
 
 type Repository interface {
 	AddUser(ctx context.Context, user types.UserLongData) (types.UserResponse, error)
-	CheckUserExist(email string, password string) (types.UserShortData, error)
+	CheckUserExist(email, password string) (types.UserShortData, error)
+	GetFlights(dep, des string, departureDate time.Time) ([]types.Flight, error)
 }
 
 type Service struct {
@@ -51,11 +53,15 @@ func (s *Service) CheckUserExist(email string, password string) (types.UserShort
 		log.Println(err)
 		return types.UserShortData{}, err
 	}
-	
+
 	validate := utils.VerifyPassword(password, user.Password)
 	if !validate {
 		return types.UserShortData{}, errors.New("Invalid password")
 	}
 
 	return user, nil
+}
+
+func (s *Service) GetFlights(dep, des string, departureDate time.Time) ([]types.Flight, error) {
+	return s.repo.GetFlights(dep, des, departureDate)
 }

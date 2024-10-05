@@ -45,3 +45,11 @@ type Claims struct {
 	Email string `json:"email"`
 	jwt.StandardClaims
 }
+
+type Flight struct {
+	ID            int    `json:"id" db:"id"`
+	Departure     string `json:"departure" db:"departueid"`
+	Arrival       string `json:"arrival" db:"arrivalid"`
+	DepartureDate string `json:"departure_date" db:"departuedatetime"`
+	Price         string `json:"price" db:"price"`
+}

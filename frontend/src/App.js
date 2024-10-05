@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Header from './components/Header/Header';
 import 'bootstrap/dist/css/bootstrap.min.css'
+import SearchResults from "./components/FlightResult/flightResult";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/search" element={<SearchResults />} />
             </Routes>
         </Router>
     );

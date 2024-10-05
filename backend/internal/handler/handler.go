@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Handler struct {
@@ -29,6 +30,7 @@ func (h *Handler) Init() *gin.Engine {
 
 	router.POST("/signup", h.Signup)
 	router.POST("/login", h.Login)
+	router.GET("/search", h.Search)
 	return router
 }
 
@@ -108,4 +110,30 @@ func (h *Handler) Login(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func (h *Handler) Search(ctx *gin.Context) {
+	dep := ctx.Query("dep")
+	des := ctx.Query("des")
+	depDate := ctx.Query("depDate")
+
+	log.Println(dep, des, depDate)
+	if dep == "" || des == "" || depDate == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "1 Can't get flight for this parameters"})
+		return
+	}
+
+	departureDate, err := time.Parse("2006-01-02", depDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date format; must be YYYY-MM-DD"})
+		return
+	}
+
+	flights, err := h.service.GetFlights(dep, des, departureDate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "2 Can't get flight for this parameters"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, flights)
 }

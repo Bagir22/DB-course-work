@@ -9,6 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"log"
+	"time"
 )
 
 type Db struct {
@@ -59,4 +60,28 @@ func (d *Db) CheckUserExist(email string, password string) (types.UserShortData,
 	}
 
 	return user, nil
+}
+
+func (d *Db) GetFlights(dep, des string, depDate time.Time) ([]types.Flight, error) {
+	var flights []types.Flight
+
+	rows, err := d.db.Query(Queries.GetFlights, dep, des, depDate)
+	if err != nil {
+		return []types.Flight{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var flight types.Flight
+		if err := rows.Scan(&flight.ID, &flight.Departure, &flight.Arrival, &flight.DepartureDate, &flight.Price); err != nil {
+			return []types.Flight{}, err
+		}
+		flights = append(flights, flight)
+	}
+
+	if err := rows.Err(); err != nil {
+		return []types.Flight{}, err
+	}
+
+	return flights, nil
 }
