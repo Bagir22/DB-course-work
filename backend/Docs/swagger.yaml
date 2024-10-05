@@ -1,0 +1,178 @@
+openapi: 3.0.0
+info:
+  title: DB-courseWork
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/
+    description: Dev server
+paths:
+  /login:
+    post:
+      summary: Метод авторизации пользователя
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserShortData"
+      responses:
+        '200':
+          description: Успешный ответ, данные авторизованого пользователя
+          content:
+            applicataion/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/UserShortData"
+        'default':
+          description: Ошибка
+          content:
+            applicataion/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /signup:
+    post:
+      summary: Метод создания пользователя
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLongData"
+      responses:
+        '200':
+          description: Успешный ответ, данные добавленного пользователя
+          content:
+            applicataion/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/UserShortData"
+        'default':
+          description: Ошибка
+          content:
+            applicataion/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+  /:
+    get:
+      summary: Метод поиска авиабилетов
+      tags:
+        - Search
+      responses:
+        '200':
+          description: Успешный ответ, список полетов
+          content:
+            applicataion/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - type: array
+                      items:
+                        $ref: "#/components/schemas/Flight"
+        'default':
+          description: Ошибка
+          content:
+            applicataion/json:
+              schema:
+                $ref: "#/components/schemas/Response"
+components:
+  schemas:
+    UserShortData:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: example@gmail.com
+        password:
+          type: string
+          example: SomePassword
+    UserLongData:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+        - dateOfBirth
+        - passportSerie
+        - passportNumber
+        - password
+      properties:
+        firstName:
+          type: string
+          example: SomeName
+        lastName:
+          type: string
+          example: SomeSurname
+        email:
+          type: string
+          example: example@gmail.com
+        phone:
+          type: integer
+          example: 89021009988
+        date:
+          type: string
+          format: date
+          example: "2019-05-17"
+        passportSerie:
+          type: integer
+          example: 1234
+        passportNumber:
+          type: integer
+          example: 123456
+        password:
+          type: string
+          example: SomePassword
+    Flight:
+      type: object
+      required:
+        - aircraft
+        - DepartueAirport
+        - DestinationAirport
+        - DepartueDateTime
+        - ArrivalDateTime
+        - Price
+      properties:
+        aircraft:
+          type: string
+          example: Boeing 737
+        DepartueAirport:
+          type: string
+          example: Moscow
+        DestinationAirport:
+          type: string
+          example: Kazan
+        DepartueDateTime:
+          type: string
+          format: date-time
+          example: '2017-07-21T17:32:28Z'
+        ArrivalDateTime:
+          type: string
+          format: date-time
+          example: '2017-07-21T19:32:28Z'
+        Price:
+          type: string
+          example: 10000
+    Response:
+      type: object
+      required:
+        - message
+        - description
+      properties:
+        message:
+          type: string
+          example: "Some message about response"
+        description:
+          type: string
+          example: "Some error"
