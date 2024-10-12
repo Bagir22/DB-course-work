@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Header from './components/Header/Header';
 import 'bootstrap/dist/css/bootstrap.min.css'
-import SearchResults from "./components/FlightResult/flightResult";
+import SearchResults from "./components/SearchtResult/SearchResult";
+import Booking from "./pages/Booking";
+import EditProfile from "./pages/EditProfile";
+import History from "./pages/History";
 
 function App() {
     return (
@@ -16,6 +19,9 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/search" element={<SearchResults />} />
+                <Route path="/book/:flightId" element={<Booking />} />
+                <Route path="/edit-profile" element={<EditProfile />} />
+                <Route path="/history" element={<History />} />
             </Routes>
         </Router>
     );

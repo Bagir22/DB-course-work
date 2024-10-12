@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"courseWork/internal/types"
-	"github.com/dgrijalva/jwt-go"
+	"courseWork/internal/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -16,17 +16,17 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims := &types.Claims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return types.JwtSecret, nil
-		})
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-		if err != nil || !token.Valid {
+		claims, err := utils.ValidateToken(tokenString)
+		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
+		c.Set("email", claims.Email)
+		
 		c.Next()
 	}
 }

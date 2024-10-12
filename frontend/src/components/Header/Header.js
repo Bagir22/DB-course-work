@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Header.css'; // Убедитесь, что путь правильный
+import './Header.css';
 import reactLogo from '../../logo.svg';
 
 const Header = () => {
@@ -14,11 +14,11 @@ const Header = () => {
     };
 
     return (
-        <header className="header"> {/* Здесь используется класс header */}
+        <header className="header">
             <img
-                src={reactLogo} // Используйте локальный логотип
+                src={reactLogo}
                 alt="React Logo"
-                style={{ width: '50px', height: '50px' }} // Настройка размера
+                style={{ width: '50px', height: '50px' }}
             />
             {token ? (
                 <div className="d-flex align-items-center">

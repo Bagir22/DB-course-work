@@ -13,6 +13,12 @@ type Repository interface {
 	AddUser(ctx context.Context, user types.UserLongData) (types.UserResponse, error)
 	CheckUserExist(email, password string) (types.UserShortData, error)
 	GetFlights(dep, des string, departureDate time.Time) ([]types.Flight, error)
+	GetUserByEmail(email string) (types.UserLongData, error)
+	GetSeatsForFlight(flightId int) ([]types.Seat, error)
+	AddFlightBooking(booking types.BookFlight) error
+	UpdateUser(updateData types.UserLongData) error
+	GetUserIdByEmail(email string) (int, error)
+	GetPassengerHistory(email string) ([]types.History, error)
 }
 
 type Service struct {
@@ -64,4 +70,34 @@ func (s *Service) CheckUserExist(email string, password string) (types.UserShort
 
 func (s *Service) GetFlights(dep, des string, departureDate time.Time) ([]types.Flight, error) {
 	return s.repo.GetFlights(dep, des, departureDate)
+}
+
+func (s *Service) GetUserByEmail(email string) (types.UserLongData, error) {
+	return s.repo.GetUserByEmail(email)
+}
+
+func (s *Service) GetSeatsForFlight(flightId int) ([]types.Seat, error) {
+	return s.repo.GetSeatsForFlight(flightId)
+}
+
+func (s *Service) AddFlightBooking(booking types.BookFlight) error {
+	return s.repo.AddFlightBooking(booking)
+}
+
+func (s *Service) GetUserIdByEmail(email string) (int, error) {
+	return s.repo.GetUserIdByEmail(email)
+}
+
+func (s *Service) UpdateUser(updateData types.UserLongData) error {
+	err := s.repo.UpdateUser(updateData)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) GetPassengerHistory(email string) ([]types.History, error) {
+	return s.repo.GetPassengerHistory(email)
 }

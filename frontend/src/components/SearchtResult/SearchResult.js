@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Search = () => {
@@ -8,6 +8,7 @@ const Search = () => {
     const [flights, setFlights] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
@@ -19,13 +20,12 @@ const Search = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/search?dep=${dep}&des=${des}&depDate=${depDate}`);
                 if (response.data.length === 0) {
-                    setError('Flights not found');
+                    console.error('No flights found');
                 } else {
                     setFlights(response.data);
                 }
             } catch (error) {
                 console.error('Error: ', error);
-                setError('Error fetching flights');
             } finally {
                 setLoading(false);
             }
@@ -33,6 +33,15 @@ const Search = () => {
 
         fetchFlights();
     }, [location.search]);
+
+    const handleBooking = (flight) => {
+        if (token) {
+            navigate(`/book/${flight.id}`, { state: { flight } });
+        } else {
+            alert('Please log in to book a flight');
+            navigate('/login');
+        }
+    };
 
     if (loading) return <p className="text-center">Loading...</p>;
     if (error) return <p className="text-center text-danger">{error}</p>;
@@ -45,19 +54,23 @@ const Search = () => {
             {flights.length > 0 ? (
                 <div className="d-flex flex-column align-items-center">
                     {flights.map(flight => (
-                        <div key={flight.id} className="card mb-3" style={{width: '100%', maxWidth: '600px'}}>
-                            <div className="card-body">
-                                <h5 className="card-title">{flight.departure} to {flight.arrival}</h5>
-                                <p className="card-text">
-                                    Departure: {new Date(flight.departure_date).toLocaleString()}<br/>
-                                    Price: {flight.price}
-                                </p>
-                                {token ? (
-                                    <button className="btn btn-primary">Book Now</button>
-                                ) : (
-                                    <p className="text-muted">Please log in to book</p>
-                                )}
-                            </div>
+                        <div key={flight.id} className="list-group-item mb-3 p-4 border rounded">
+                            <h5>{flight.departure_city} ({flight.departure})
+                                → {flight.arrival_city} ({flight.arrival})</h5>
+                            <p><strong>Departure:</strong> {new Date(flight.departure_date).toLocaleString()}</p>
+                            <p><strong>Arrival:</strong> {new Date(flight.arrival_date).toLocaleString()}</p>
+                            <p><strong>Price:</strong> {flight.price}</p>
+                            <p><strong>Available Seats:</strong> {flight.available_seats}</p>
+                            {token ? (
+                                <button
+                                    className="btn btn-info"
+                                    onClick={() => handleBooking(flight)}
+                                >
+                                    Book Now
+                                </button>
+                            ) : (
+                                <p className="text-muted">Please log in to book</p>
+                            )}
                         </div>
                     ))}
                 </div>

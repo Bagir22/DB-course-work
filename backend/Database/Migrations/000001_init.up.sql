@@ -71,7 +71,7 @@ create table if not exists "Passenger"
 alter table "Passenger" add constraint passport_unique unique (passportSerie, passportNumber);
 
 create type status as enum ('booked', 'paid', 'canceled', 'done');
-create type "row" as enum ('A', 'B', 'C', 'D', 'E', 'F');
+create type "row" as enum ('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H,', 'I');
 
 create table if not exists "FlightBooking"
 (

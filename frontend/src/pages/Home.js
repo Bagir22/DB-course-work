@@ -8,15 +8,17 @@ const Home = () => {
     const [arrival, setArrival] = useState('');
     const [date, setDate] = useState('');
     const navigate = useNavigate();
+    const currentDate = new Date().toISOString().split('T')[0];
 
     const handleSearch = async (e) => {
         e.preventDefault();
         navigate(`/search?dep=${departure}&des=${arrival}&depDate=${date}`);
     };
 
+
     return (
         <div className="container mt-5">
-            <h1 className="text-center mb-4">Поиск рейсов</h1>
+            <h1 className="text-center mb-4">Search Flights</h1>
             <form
                 onSubmit={handleSearch}
                 className="d-flex justify-content-center align-items-center"
@@ -52,10 +54,11 @@ const Home = () => {
                         onChange={(e) => setDate(e.target.value)}
                         required
                         style={{ height: '50px' }}
+                        min={currentDate}
                     />
                 </div>
                 <button type="submit" className="btn btn-warning" style={{ height: '50px', marginBottom: 0 }}>
-                    Найти
+                    Search
                 </button>
             </form>
         </div>

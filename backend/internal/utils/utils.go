@@ -2,8 +2,10 @@ package utils
 
 import (
 	"courseWork/internal/types"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"time"
 )
 
@@ -42,5 +44,23 @@ func GenerateToken(email string) (string, error) {
 		return "", err
 	}
 
+	log.Println("Token: ", tokenString)
 	return tokenString, nil
+}
+
+func ValidateToken(tokenString string) (*types.Claims, error) {
+	claims := &types.Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return types.JwtSecret, nil
+	})
+
+	if err != nil || !token.Valid {
+		return nil, err
+	}
+
+	return claims, nil
 }

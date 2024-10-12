@@ -26,13 +26,14 @@ type SignupRequest struct {
 }
 
 type UserLongData struct {
+	Id             int    `json:"id" db:"id"`
 	FirstName      string `json:"firstName" db:"firstName"`
 	LastName       string `json:"lastName" db:"lastName"`
 	Email          string `json:"email" db:"email"`
 	Phone          string `json:"phone" db:"phone"`
 	DateOfBirth    string `json:"dateOfBirth" db:"dateOfBirth"`
-	PassportSerie  string `json:"passportSerie" db:"passportSerie"`
-	PassportNumber int    `json:"passportNumber" db:"passportNumber"`
+	PassportSerie  string `json:"passportSerie" db:"passportserie"`
+	PassportNumber int    `json:"passportNumber" db:"passportnumber"`
 	Password       string `json:"password" db:"password"`
 }
 
@@ -47,9 +48,41 @@ type Claims struct {
 }
 
 type Flight struct {
-	ID            int    `json:"id" db:"id"`
-	Departure     string `json:"departure" db:"departueid"`
-	Arrival       string `json:"arrival" db:"arrivalid"`
-	DepartureDate string `json:"departure_date" db:"departuedatetime"`
+	Id             int    `json:"id" db:"id"`
+	Departure      string `json:"departure" db:"departure_airport"`
+	DepartureCity  string `json:"departure_city" db:"departure_city"`
+	Arrival        string `json:"arrival" db:"arrival_airport"`
+	ArrivalCity    string `json:"arrival_city" db:"arrival_city"`
+	DepartureDate  string `json:"departure_date" db:"departure_date"`
+	ArrivalDate    string `json:"arrival_date" db:"arrival_date"`
+	Price          string `json:"price" db:"price"`
+	AvailableSeats int    `json:"available_seats" db:"available_seats"`
+}
+
+type Seat struct {
+	Row    string `json:"row" db:"row"`
+	Seat   int    `json:"seat" db:"seat"`
+	Status string `json:"status" db:"status"`
+}
+
+type BookFlight struct {
+	FlightId    int    `json:"flightId" db:"flightid"`
+	PassengerId int    `json:"passengerId" db:"passengerid"`
+	Status      string `json:"status" db:"status"`
+	Row         string `json:"row" db:"row"`
+	Seat        int    `json:"seat" db:"seat"`
+}
+
+type History struct {
+	Id            int    `json:"id" db:"id"`
+	Departure     string `json:"departure" db:"departure_airport"`
+	DepartureCity string `json:"departure_city" db:"departure_city"`
+	Arrival       string `json:"arrival" db:"arrival_airport"`
+	ArrivalCity   string `json:"arrival_city" db:"arrival_city"`
+	DepartureDate string `json:"departure_date" db:"departure_date"`
+	ArrivalDate   string `json:"arrival_date" db:"arrival_date"`
 	Price         string `json:"price" db:"price"`
+	Status        string `json:"status" db:"status"`
+	Row           string `json:"row" db:"row"`
+	Seat          int    `json:"seat" db:"seat"`
 }
