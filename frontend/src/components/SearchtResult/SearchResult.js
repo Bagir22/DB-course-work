@@ -34,9 +34,15 @@ const Search = () => {
         fetchFlights();
     }, [location.search]);
 
+    const token = localStorage.getItem('token');
+
     const handleBooking = (flight) => {
         if (token) {
-            navigate(`/book/${flight.id}`, { state: { flight } });
+            if (flight.isBooked) {
+                alert('You have already booked this flight.');
+            } else {
+                navigate(`/book/${flight.id}`, { state: { flight } });
+            }
         } else {
             alert('Please log in to book a flight');
             navigate('/login');
@@ -46,8 +52,6 @@ const Search = () => {
     if (loading) return <p className="text-center">Loading...</p>;
     if (error) return <p className="text-center text-danger">{error}</p>;
 
-    const token = localStorage.getItem('token');
-
     return (
         <div className="container mt-5">
             <h1 className="text-center mb-4">Available Flights</h1>
@@ -55,21 +59,23 @@ const Search = () => {
                 <div className="d-flex flex-column align-items-center">
                     {flights.map(flight => (
                         <div key={flight.id} className="list-group-item mb-3 p-4 border rounded">
-                            <h5>{flight.departure_city} ({flight.departure})
-                                → {flight.arrival_city} ({flight.arrival})</h5>
+                            <h5>{flight.departure_city} ({flight.departure}) → {flight.arrival_city} ({flight.arrival})</h5>
                             <p><strong>Departure:</strong> {new Date(flight.departure_date).toLocaleString()}</p>
                             <p><strong>Arrival:</strong> {new Date(flight.arrival_date).toLocaleString()}</p>
                             <p><strong>Price:</strong> {flight.price}</p>
                             <p><strong>Available Seats:</strong> {flight.available_seats}</p>
-                            {token ? (
-                                <button
-                                    className="btn btn-info"
-                                    onClick={() => handleBooking(flight)}
-                                >
-                                    Book Now
+                            {flight.isBooked ? (
+                                <button className="btn btn-secondary" disabled>
+                                    Already Booked
                                 </button>
                             ) : (
-                                <p className="text-muted">Please log in to book</p>
+                                token ? (
+                                    <button className="btn btn-info" onClick={() => handleBooking(flight)}>
+                                        Book Now
+                                    </button>
+                                ) : (
+                                    <p className="text-muted">Please log in to book</p>
+                                )
                             )}
                         </div>
                     ))}

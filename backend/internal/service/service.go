@@ -18,7 +18,16 @@ type Repository interface {
 	AddFlightBooking(booking types.BookFlight) error
 	UpdateUser(updateData types.UserLongData) error
 	GetUserIdByEmail(email string) (int, error)
-	GetPassengerHistory(email string) ([]types.History, error)
+	GetPassengerHistory(email, status, city string, date *time.Time) ([]types.History, error)
+	IsFlightBookedByUser(flightId int, userId int) (bool, error)
+	CancelFlightByID(flightId int, userId int) error
+	GetAllFlights() ([]types.FlightControl, error)
+	GetFlightById(flightId int) (types.FlightControl, error)
+	CreateFlight(flight types.FlightCreate) error
+	UpdateFlight(flight types.FlightControl) error
+	DeleteFlight(id int) error
+	GetAirlinesAircrafts() ([]types.AirlineAircrafts, error)
+	GetAirports() ([]types.Airport, error)
 }
 
 type Service struct {
@@ -89,6 +98,7 @@ func (s *Service) GetUserIdByEmail(email string) (int, error) {
 }
 
 func (s *Service) UpdateUser(updateData types.UserLongData) error {
+	log.Println(updateData)
 	err := s.repo.UpdateUser(updateData)
 
 	if err != nil {
@@ -98,6 +108,43 @@ func (s *Service) UpdateUser(updateData types.UserLongData) error {
 	return nil
 }
 
-func (s *Service) GetPassengerHistory(email string) ([]types.History, error) {
-	return s.repo.GetPassengerHistory(email)
+func (s *Service) GetPassengerHistory(email, status, city string, date *time.Time) ([]types.History, error) {
+	return s.repo.GetPassengerHistory(email, status, city, date)
+}
+
+func (s *Service) IsFlightBookedByUser(flightId int, userId int) (bool, error) {
+	return s.repo.IsFlightBookedByUser(flightId, userId)
+}
+
+func (s *Service) CancelFlightByID(flightId int, userId int) error {
+	err := s.repo.CancelFlightByID(flightId, userId)
+	return err
+}
+
+func (s *Service) GetAllFlights() ([]types.FlightControl, error) {
+	return s.repo.GetAllFlights()
+}
+
+func (s *Service) GetFlightById(flightId int) (types.FlightControl, error) {
+	return s.repo.GetFlightById(flightId)
+}
+
+func (s *Service) CreateFlight(flight types.FlightCreate) error {
+	return s.repo.CreateFlight(flight)
+}
+
+func (s *Service) UpdateFlight(flight types.FlightControl) error {
+	return s.repo.UpdateFlight(flight)
+}
+
+func (s *Service) GetAirlinesAircrafts() ([]types.AirlineAircrafts, error) {
+	return s.repo.GetAirlinesAircrafts()
+}
+
+func (s *Service) GetAirports() ([]types.Airport, error) {
+	return s.repo.GetAirports()
+}
+
+func (s *Service) DeleteFlight(id int) error {
+	return s.repo.DeleteFlight(id)
 }

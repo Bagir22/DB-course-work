@@ -87,3 +87,8 @@ create table if not exists "FlightBooking"
     row "row",
     seatInRow smallint
 );
+
+alter table "FlightBooking" add constraint unique_flight_passenger unique (flightId, passengerId);
+
+alter table "Passenger" add column image text default 'defaultImage.jpeg';
+alter table "Passenger" add column isAdmin bool default false;

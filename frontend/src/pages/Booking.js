@@ -13,6 +13,7 @@ const Booking = () => {
     const [selectedSeat, setSelectedSeat] = useState('');
     const [seats, setSeats] = useState([]);
     const [error, setError] = useState('');
+    const [isBooked, setIsBooked] = useState(false); // New state for booking status
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -29,7 +30,7 @@ const Booking = () => {
                     setError('Error fetching user data.');
                 });
         }
-    }, [flight.id]);
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -44,6 +45,17 @@ const Booking = () => {
                 })
                 .catch(err => {
                     console.error('Error fetching available seats:', err);
+                });
+
+            axios
+                .get(`http://localhost:8080/api/flights/${flight.id}/isBooked`, {
+                    headers: { Authorization: `${token}` }
+                })
+                .then(response => {
+                    setIsBooked(response.data.isBooked);
+                })
+                .catch(err => {
+                    console.error('Error checking booking status:', err);
                 });
         }
     }, [flight.id]);
@@ -61,7 +73,7 @@ const Booking = () => {
             seats: seats.filter(seat => seat.row === row).sort((a, b) => a.seats - b.seats)
         };
     });
-    
+
     const handleBooking = () => {
         if (!selectedRow || !selectedSeat) {
             alert('Please select a row and seat.');
@@ -153,6 +165,7 @@ const Booking = () => {
                     <strong>Arrival:</strong> {flight.arrival_city} ({flight.arrival}) {new Date(flight.arrival_date).toLocaleString()}
                 </p>
                 <p><strong>Price:</strong> {flight.price}</p>
+                {isBooked && <p className="text-danger">This flight is already booked.</p>} {/* Show message if booked */}
             </div>
 
             <div className="mb-4 bg-light border border-3 rounded-2 position-relative p-3">
@@ -172,7 +185,7 @@ const Booking = () => {
                                                 ${seat.status === 'available' ? 'available' : 'unavailable'}
                                                 ${selectedRow === seat.row && selectedSeat === seat.seat ? 'active' : ''}`}
                                         onClick={() => handleSeatSelection(seat.row, seat.seat)}
-                                        disabled={seat.status !== 'available'}
+                                        disabled={seat.status !== 'available' || isBooked}
                                     >
                                         {seat.seat}
                                     </button>
@@ -183,10 +196,15 @@ const Booking = () => {
                 </div>
             </div>
 
-            <button className="btn btn-success" onClick={handleBooking}>Confirm Booking</button>
+            <button
+                className="btn btn-success"
+                onClick={handleBooking}
+                disabled={isBooked}
+            >
+                Confirm Booking
+            </button>
         </div>
     );
 };
 
 export default Booking;
-

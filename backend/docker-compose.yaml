@@ -7,6 +7,7 @@ services:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     command: go run cmd/main.go -b 0.0.0.0
 
   db:

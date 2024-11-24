@@ -21,6 +21,8 @@ const Login = () => {
             if (response.ok) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
+                localStorage.setItem('userImage', data.userImage);
+                localStorage.setItem('userIsAdmin', data.userIsAdmin);
                 localStorage.setItem('email', email);
                 navigate('/');
             } else {

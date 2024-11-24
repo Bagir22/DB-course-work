@@ -6,6 +6,7 @@ import (
 	"courseWork/internal/server"
 	"courseWork/internal/service"
 	"courseWork/internal/storage/postgres"
+	"courseWork/internal/utils"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -24,6 +25,11 @@ func main() {
 		log.Fatal("Can't init connection to database")
 	}
 	defer conn.Close()
+
+	err = utils.MarkFlightsAsDone(conn.DB)
+	if err != nil {
+		log.Println("Error marking flights as done:", err)
+	}
 
 	db := postgres.InitDb(conn)
 

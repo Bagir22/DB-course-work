@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"courseWork/Database/Queries"
 	"courseWork/internal/types"
+	"database/sql"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
@@ -22,7 +24,7 @@ func VerifyPassword(password, hash string) bool {
 func ValidateUser(user types.UserLongData) bool {
 	if user.FirstName == "" || user.LastName == "" ||
 		user.Email == "" || user.Phone == "" || user.DateOfBirth == "" ||
-		user.PassportNumber == 0 || user.PassportSerie == "" || user.Password == "" {
+		user.PassportNumber == "" || user.PassportSerie == "" || user.Password == "" {
 		return false
 	}
 
@@ -63,4 +65,38 @@ func ValidateToken(tokenString string) (*types.Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func MarkFlightsAsDone(db *sql.DB) error {
+	res, err := db.Exec(Queries.MarkFlightsAsDone)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Updated %d flight bookings to 'done'", rowsAffected)
+	return nil
+}
+
+func ConvertToUserLongData(userFromFront types.UserLongDataFromFront) (types.UserLongData, error) {
+	user := types.UserLongData{
+		Id:             userFromFront.Id,
+		FirstName:      userFromFront.FirstName,
+		LastName:       userFromFront.LastName,
+		Email:          userFromFront.Email,
+		Phone:          userFromFront.Phone,
+		DateOfBirth:    userFromFront.DateOfBirth,
+		PassportSerie:  userFromFront.PassportSerie,
+		PassportNumber: userFromFront.PassportNumber,
+		Password:       userFromFront.Password,
+	}
+	if userFromFront.Image != nil && userFromFront.Image.Filename != "" {
+		user.Image = userFromFront.Image.Filename
+	}
+
+	return user, nil
 }

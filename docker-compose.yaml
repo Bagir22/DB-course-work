@@ -8,6 +8,7 @@ services:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - ./backend:/usr/src/app
+      - ./uploads:/usr/src/app/uploads
     command: go run cmd/main.go -b 0.0.0.0
 
   db:
@@ -27,9 +28,11 @@ services:
     build:
       context: ./frontend
     ports:
-      - 3000:80
+      - 3000:3000
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+    command: npm start
 
 volumes:
   postgres-db:

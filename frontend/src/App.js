@@ -9,6 +9,9 @@ import SearchResults from "./components/SearchtResult/SearchResult";
 import Booking from "./pages/Booking";
 import EditProfile from "./pages/EditProfile";
 import History from "./pages/History";
+import Admin from "./admin/Admin";
+import EditFlight from "./admin/EditFlight";
+import Add from "./admin/Add";
 
 function App() {
     return (
@@ -22,6 +25,9 @@ function App() {
                 <Route path="/book/:flightId" element={<Booking />} />
                 <Route path="/edit-profile" element={<EditProfile />} />
                 <Route path="/history" element={<History />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/edit-flight/:id" element={<EditFlight />} />
+                <Route path="/admin/add" element={<Add />} />
             </Routes>
         </Router>
     );
