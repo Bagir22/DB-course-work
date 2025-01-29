@@ -9,11 +9,15 @@ const EditFlightPage = () => {
     const [airlinesAndAircrafts, setAirlinesAndAircrafts] = useState([]);
     const [airlines, setAirlines] = useState([]);
     const [filteredAircrafts, setFilteredAircrafts] = useState([]);
+    const [error, setError] = useState(""); // Для отображения ошибок
     const currentDate = new Date().toISOString().slice(0, 16);
 
-
     useEffect(() => {
-        axios.get(`http://localhost:8080/api/airlinesaircrafts`)
+        const token = localStorage.getItem("token");
+        axios
+            .get(`http://localhost:8080/auth/airlinesaircrafts`, {
+                headers: { Authorization: `${token}` },
+            })
             .then((response) => {
                 const data = response.data;
 
@@ -26,19 +30,21 @@ const EditFlightPage = () => {
                 }, {});
 
                 setAirlinesAndAircrafts(airlinesGrouped);
-
                 setAirlines(Object.keys(airlinesGrouped));
             })
             .catch((error) => {
-                console.error('Error loading airlines and aircrafts:', error);
+                console.error("Error loading airlines and aircrafts:", error);
             });
 
-        axios.get(`http://localhost:8080/admin/flights/${id}`)
+        axios
+            .get(`http://localhost:8080/admin/flights/${id}`, {
+                headers: { Authorization: `${token}` },
+            })
             .then((response) => {
                 setFlight(response.data);
             })
             .catch((error) => {
-                console.error('Error loading flight data:', error);
+                console.error("Error loading flight data:", error);
             });
     }, [id]);
 
@@ -52,15 +58,32 @@ const EditFlightPage = () => {
     }, [flight?.airline_name, airlinesAndAircrafts]);
 
     const handleSave = () => {
-        axios.put(`http://localhost:8080/admin/flights/${id}`, {
-            ...flight,
-            aircraft_id: parseInt(flight.aircraft_id)
-        })
+        setError("");
+
+        if (new Date(flight.arrival_datetime) <= new Date(flight.departure_datetime)) {
+            setError("Arrival time cannot be earlier than or equal to departure time.");
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        axios
+            .put(
+                `http://localhost:8080/admin/flights/${id}`,
+                {
+                    ...flight,
+                    aircraft_id: parseInt(flight.aircraft_id),
+                    departure_datetime: new Date(flight.departure_datetime).toISOString(),
+                    arrival_datetime: new Date(flight.arrival_datetime).toISOString(),
+                },
+                {
+                    headers: { Authorization: `${token}` },
+                }
+            )
             .then(() => {
-                alert('Flight updated successfully!');
+                alert("Flight updated successfully!");
             })
             .catch((error) => {
-                console.error('Error updating flight:', error);
+                console.error("Error updating flight:", error);
             });
     };
 
@@ -72,14 +95,15 @@ const EditFlightPage = () => {
         <div className="container mt-5">
             <h1 className="mb-4 text-center">Edit Flight</h1>
             <form className="bg-light p-4 rounded shadow">
+                {error && <div className="alert alert-danger">{error}</div>}
                 <div className="mb-3">
                     <label className="form-label">Airline Name</label>
                     <select
                         className="form-select"
-                        value={flight.airline_name || ''}
+                        value={flight.airline_name || ""}
                         onChange={(e) => {
                             const selectedAirlineName = e.target.value;
-                            setFlight({ ...flight, airline_name: selectedAirlineName, aircraft_id: '' });
+                            setFlight({ ...flight, airline_name: selectedAirlineName, aircraft_id: "" });
                         }}
                     >
                         <option value="">Select an airline</option>
@@ -95,7 +119,7 @@ const EditFlightPage = () => {
                     <label className="form-label">Aircraft Name</label>
                     <select
                         className="form-select"
-                        value={flight.aircraft_id || ''}
+                        value={flight.aircraft_id || ""}
                         onChange={(e) => {
                             const selectedAircraftId = parseInt(e.target.value);
                             setFlight({ ...flight, aircraft_id: selectedAircraftId });
@@ -120,9 +144,15 @@ const EditFlightPage = () => {
                     <input
                         type="datetime-local"
                         className="form-control"
-                        value={new Date(flight.departure_datetime).toISOString().slice(0, 16)}
+                        value={
+                            flight.departure_datetime
+                                ? new Date(flight.departure_datetime).toISOString().slice(0, 16)
+                                : ""
+                        }
                         min={currentDate}
-                        onChange={(e) => setFlight({ ...flight, departure_datetime: e.target.value })}
+                        onChange={(e) =>
+                            setFlight({ ...flight, departure_datetime: e.target.value })
+                        }
                     />
                 </div>
                 <div className="mb-3">
@@ -130,21 +160,32 @@ const EditFlightPage = () => {
                     <input
                         type="datetime-local"
                         className="form-control"
-                        value={new Date(flight.arrival_datetime).toISOString().slice(0, 16)}
+                        value={
+                            flight.arrival_datetime
+                                ? new Date(flight.arrival_datetime).toISOString().slice(0, 16)
+                                : ""
+                        }
                         min={currentDate}
-                        onChange={(e) => setFlight({ ...flight, arrival_datetime: e.target.value })}
+                        onChange={(e) =>
+                            setFlight({ ...flight, arrival_datetime: e.target.value })
+                        }
                     />
                 </div>
+
                 <div className="mb-3">
                     <label className="form-label">Price</label>
                     <input
                         type="number"
                         className="form-control"
-                        value={flight.price || ''}
+                        value={flight.price || ""}
                         onChange={(e) => setFlight({ ...flight, price: parseInt(e.target.value) })}
                     />
                 </div>
-                <button type="button" className="btn btn-primary w-100" onClick={handleSave}>
+                <button
+                    type="button"
+                    className="btn btn-primary w-100"
+                    onClick={handleSave}
+                >
                     Save
                 </button>
             </form>
@@ -153,3 +194,4 @@ const EditFlightPage = () => {
 };
 
 export default EditFlightPage;
+

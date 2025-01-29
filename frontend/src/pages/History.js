@@ -27,7 +27,7 @@ const FlightHistory = () => {
         };
 
         axios
-            .get('http://localhost:8080/api/history', {
+            .get('http://localhost:8080/auth/history', {
                 headers: { Authorization: `Bearer ${token}` },
                 params,
             })
@@ -66,7 +66,7 @@ const FlightHistory = () => {
         const token = localStorage.getItem('token');
 
         axios
-            .post(`http://localhost:8080/api/cancel/${flightId}`, {}, {
+            .post(`http://localhost:8080/auth/cancel/${flightId}`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then(() => {

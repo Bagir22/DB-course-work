@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	_ "courseWork/Docs"
 	"courseWork/internal/middleware"
 	"courseWork/internal/service"
 	"courseWork/internal/types"
@@ -9,6 +10,8 @@ import (
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -43,7 +46,7 @@ func (h *Handler) Init() *gin.Engine {
 	router.POST("/login", h.Login)
 	router.GET("/search", h.Search)
 
-	auth := router.Group("/api")
+	auth := router.Group("/auth")
 	auth.Use(middleware.AuthMiddleware())
 
 	auth.GET("/user", h.GetUser)
@@ -53,6 +56,8 @@ func (h *Handler) Init() *gin.Engine {
 	auth.POST("/book", h.Book)
 	auth.GET("/history", h.GetHistory)
 	auth.POST("/cancel/:flightId", h.CancelBooking)
+	auth.GET("/airlinesaircrafts", h.GetAirlinesAircrafts)
+	auth.GET("/airports", h.GetAirports)
 
 	admin := router.Group("/admin")
 	admin.GET("/flights", h.GetFlights)
@@ -60,10 +65,9 @@ func (h *Handler) Init() *gin.Engine {
 	admin.PUT("/flights/:id", h.UpdateFlight)
 	admin.DELETE("/flights/:id", h.DeleteFlight)
 	admin.POST("/flights", h.CreateFlight)
+	admin.GET("/flightscount", h.TotalFlightsCount)
 
-	api := router.Group("/api")
-	api.GET("/airlinesaircrafts", h.GetAirlinesAircrafts)
-	api.GET("/airports", h.GetAirports)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	return router
 }
@@ -84,7 +88,7 @@ func (h *Handler) Signup(ctx *gin.Context) {
 
 	var req types.SignupRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -423,7 +427,22 @@ func (h *Handler) CreateFlight(ctx *gin.Context) {
 }
 
 func (h *Handler) GetFlights(ctx *gin.Context) {
-	flights, err := h.service.GetAllFlights()
+	limitParam := ctx.DefaultQuery("limit", "10")
+	offsetParam := ctx.DefaultQuery("offset", "0")
+
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil || limit <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'limit' parameter"})
+		return
+	}
+
+	offset, err := strconv.Atoi(offsetParam)
+	if err != nil || offset < 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid 'offset' parameter"})
+		return
+	}
+
+	flights, err := h.service.GetAllFlights(limit, offset)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -443,6 +462,7 @@ func (h *Handler) GetFlightById(ctx *gin.Context) {
 }
 
 func (h *Handler) GetAirlinesAircrafts(ctx *gin.Context) {
+	log.Println(ctx)
 	data, err := h.service.GetAirlinesAircrafts()
 
 	if err != nil {
@@ -494,4 +514,15 @@ func (h *Handler) GetAirports(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, airports)
+}
+
+func (h *Handler) TotalFlightsCount(ctx *gin.Context) {
+	count, err := h.service.TotalFlightsCount()
+
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, count)
 }

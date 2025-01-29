@@ -15,7 +15,8 @@ const GetFlights = `select
 			f.departuedatetime AS departure_date,
 			f.arrivaldatetime AS arrival_date,
 			f.price,
-			(ac.rowsamount * ac.seatsinrowamount) - coalesce(sum(case when fb.bookingstatus in ('booked', 'paid') then 1 else 0 end), 0) as available_seats
+			(ac.rowsamount * ac.seatsinrowamount) - 
+			coalesce(sum(case when fb.bookingstatus in ('booked', 'paid') then 1 else 0 end), 0) as available_seats
 		from
 			"Flight" f
 		join "Airport" a1 on f.departueid = a1.id
@@ -134,29 +135,38 @@ const CancelBooking = `UPDATE "FlightBooking"
 const DeleteFlight = `DELETE FROM "Flight" WHERE id = $1;`
 
 const GetFlightList = `SELECT
-        f.id,
-		a.id AS aircraft_id,
-        a.model AS aircraft_name,
-		ai.id AS airline_id,
-        ai.name AS airline_name,
-        dep.id AS departure_id,
-        dep.name AS departure_airport,
-        c1.name AS departure_city,
-        c1.country AS departure_country,
-        dest.id AS destination_id,
-        dest.name AS destination_airport,
-        c2.name AS destination_city,
-        c2.country AS destination_country,
-        f.departueDateTime,
-        f.arrivalDateTime,
-        REPLACE(f.price::text, '$', '')::numeric AS price
-    FROM "Flight" f
-    JOIN "Aircraft" a ON f.aircraftId = a.id
-    JOIN "Airline" ai ON a.airlineid = ai.id
-    JOIN "Airport" dep ON f.departueId = dep.id
-    JOIN "Airport" dest ON f.destinationId = dest.id
-    JOIN "City" c1 ON dep.cityid = c1.id
-    JOIN "City" c2 ON dest.cityid = c2.id`
+    f.id,
+    a.id AS aircraft_id,
+    a.model AS aircraft_name,
+    ai.id AS airline_id,
+    ai.name AS airline_name,
+    dep.id AS departure_id,
+    dep.name AS departure_airport,
+    c1.name AS departure_city,
+    c1.country AS departure_country,
+    dest.id AS destination_id,
+    dest.name AS destination_airport,
+    c2.name AS destination_city,
+    c2.country AS destination_country,
+    f.departueDateTime,
+    f.arrivalDateTime,
+    REPLACE(f.price::text, '$', '')::numeric AS price,
+    COALESCE(b.booking_count, 0) AS booking_count
+FROM "Flight" f
+JOIN "Aircraft" a ON f.aircraftId = a.id
+JOIN "Airline" ai ON a.airlineid = ai.id
+JOIN "Airport" dep ON f.departueId = dep.id
+JOIN "Airport" dest ON f.destinationId = dest.id
+JOIN "City" c1 ON dep.cityid = c1.id
+JOIN "City" c2 ON dest.cityid = c2.id
+LEFT JOIN (
+    SELECT
+        flightId,
+        COUNT(*) AS booking_count
+    FROM "FlightBooking"
+    GROUP BY flightId
+) b ON f.id = b.flightId
+LIMIT $1 OFFSET $2;`
 
 const GetFullFlightById = `SELECT
         f.id,
@@ -209,3 +219,5 @@ const GetAirlinesAircrafts = `
         JOIN "Aircraft" ac ON al.id = ac.airlineId;`
 
 const GetAirports = `SELECT id, name FROM "Airport";`
+
+const GetTotalFlightsCount = `SELECT COUNT(*) FROM "Flight"`

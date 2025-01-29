@@ -125,6 +125,7 @@ type FlightControl struct {
 	DepartureDateTime  time.Time `json:"departure_datetime"`
 	ArrivalDateTime    time.Time `json:"arrival_datetime"`
 	Price              float64   `json:"price"`
+	BookingCount       int       `json:"booking_count"`
 }
 
 type AirlineAircrafts struct {

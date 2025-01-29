@@ -13,13 +13,13 @@ const Booking = () => {
     const [selectedSeat, setSelectedSeat] = useState('');
     const [seats, setSeats] = useState([]);
     const [error, setError] = useState('');
-    const [isBooked, setIsBooked] = useState(false); // New state for booking status
+    const [isBooked, setIsBooked] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
             axios
-                .get('http://localhost:8080/api/user', {
+                .get('http://localhost:8080/auth/user', {
                     headers: { Authorization: `${token}` }
                 })
                 .then(response => {
@@ -36,7 +36,7 @@ const Booking = () => {
         const token = localStorage.getItem('token');
         if (flight && flight.id && token) {
             axios
-                .get(`http://localhost:8080/api/flights/${flight.id}/seats`, {
+                .get(`http://localhost:8080/auth/flights/${flight.id}/seats`, {
                     headers: { Authorization: `${token}` }
                 })
                 .then(response => {
@@ -48,7 +48,7 @@ const Booking = () => {
                 });
 
             axios
-                .get(`http://localhost:8080/api/flights/${flight.id}/isBooked`, {
+                .get(`http://localhost:8080/auth/flights/${flight.id}/isBooked`, {
                     headers: { Authorization: `${token}` }
                 })
                 .then(response => {
@@ -91,7 +91,7 @@ const Booking = () => {
         console.log(bookingData);
 
         axios
-            .post('http://localhost:8080/api/book', bookingData, {
+            .post('http://localhost:8080/auth/book', bookingData, {
                 headers: { Authorization: `${token}` }
             })
             .then(response => {

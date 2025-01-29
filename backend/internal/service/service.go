@@ -21,13 +21,14 @@ type Repository interface {
 	GetPassengerHistory(email, status, city string, date *time.Time) ([]types.History, error)
 	IsFlightBookedByUser(flightId int, userId int) (bool, error)
 	CancelFlightByID(flightId int, userId int) error
-	GetAllFlights() ([]types.FlightControl, error)
+	GetAllFlights(limit, offset int) ([]types.FlightControl, error)
 	GetFlightById(flightId int) (types.FlightControl, error)
 	CreateFlight(flight types.FlightCreate) error
 	UpdateFlight(flight types.FlightControl) error
 	DeleteFlight(id int) error
 	GetAirlinesAircrafts() ([]types.AirlineAircrafts, error)
 	GetAirports() ([]types.Airport, error)
+	TotalFlightsCount() (count int, err error)
 }
 
 type Service struct {
@@ -121,8 +122,8 @@ func (s *Service) CancelFlightByID(flightId int, userId int) error {
 	return err
 }
 
-func (s *Service) GetAllFlights() ([]types.FlightControl, error) {
-	return s.repo.GetAllFlights()
+func (s *Service) GetAllFlights(limit, offset int) ([]types.FlightControl, error) {
+	return s.repo.GetAllFlights(limit, offset)
 }
 
 func (s *Service) GetFlightById(flightId int) (types.FlightControl, error) {
@@ -147,4 +148,8 @@ func (s *Service) GetAirports() ([]types.Airport, error) {
 
 func (s *Service) DeleteFlight(id int) error {
 	return s.repo.DeleteFlight(id)
+}
+
+func (s *Service) TotalFlightsCount() (int, error) {
+	return s.repo.TotalFlightsCount()
 }

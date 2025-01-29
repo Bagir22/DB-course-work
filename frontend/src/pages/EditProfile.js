@@ -29,7 +29,7 @@ const EditProfile = () => {
         const token = localStorage.getItem('token');
         if (token) {
             axios
-                .get('http://localhost:8080/api/user', {
+                .get('http://localhost:8080/auth/user', {
                     headers: { Authorization: `Bearer ${token}` }
                 })
                 .then((response) => {
@@ -131,7 +131,7 @@ const EditProfile = () => {
 
         const token = localStorage.getItem('token');
         axios
-            .put('http://localhost:8080/api/user', formData, {
+            .put('http://localhost:8080/auth/user', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',

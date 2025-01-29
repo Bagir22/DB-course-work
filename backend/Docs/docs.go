@@ -1,0 +1,1239 @@
+package Docs
+
+import "github.com/swaggo/swag"
+
+const docTemplate = `{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Flight Booking API",
+    "version": "1.0",
+    "description": "API for flight booking system"
+  },
+  "paths": {
+    "/signup": {
+      "post": {
+        "summary": "Регистрация нового пользователя",
+        "tags": [
+          "Base"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь зарегистрирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Вход пользоателя",
+        "tags": [
+          "Base"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResponse"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь зашел",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLoginResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search": {
+      "get": {
+        "summary": "Поиск рейсов",
+        "tags": [
+          "Base"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dep",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "des",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "depDate",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список рейсов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Flight"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/user": {
+      "get": {
+        "summary": "Получение данных пользователя",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Данные пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLongData"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Обновление данных пользователя",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLongData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Данные пользователя обновленные",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserLongData"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/flights/{id}/seats": {
+      "get": {
+        "summary": "Получение списка доступных мест для рейса",
+        "tags": [
+          "Auth"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список доступных мест",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Seat"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/flights/{id}/isBooked": {
+      "get": {
+        "summary": "Проверка на бронь рейса пользователем",
+        "tags": [
+          "Auth"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Проверка на бронь рейса пользователем",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "booked": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/book": {
+      "post": {
+        "summary": "Бронь рейса",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookFlight"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Рейс забронирован",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookFlight"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/history": {
+      "get": {
+        "summary": "Получение истории пользователя",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "История бронирование пользователя",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/History"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/cancel/{flightId}": {
+      "post": {
+        "summary": "Отмена бронироания рейса",
+        "tags": [
+          "Auth"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "flightId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Рейс отменен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/airlinesaircrafts": {
+      "get": {
+        "summary": "Получение списка самолетов авиакомпаний",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список самолетов авиакомпаний",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AirlineAircrafts"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/airports": {
+      "get": {
+        "summary": "Получение списка аэропортов",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список аэропортов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Airport"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/flights": {
+      "get": {
+        "summary": "Получение списка всех рейсов",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Список всех рейсов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FlightControl"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Создание нового рейса",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlightCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Рейс создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlightCreate"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/flights/{id}": {
+      "get": {
+        "summary": "Поиск рейса по id",
+        "tags": [
+          "Admin"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Детали рейса",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FlightControl"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Обновление рейса",
+        "tags": [
+          "Admin"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlightControl"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Рейс обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удаление рейса",
+        "tags": [
+          "Admin"
+        ],
+		"security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Рейс удален",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Response"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/flightscount": {
+      "get": {
+        "summary": "Получение количества рейсов",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Количество рейсов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Ошибка",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+	"securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "OkResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Some Ok Response"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Ошибка"
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SomePassword"
+          }
+        }
+      },
+      "UserLoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "example@gmail.com"
+          },
+          "userImage": {
+            "type": "string",
+            "example": "SomePassword"
+          },
+          "userIsAdmin": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "Response": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "SignupRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "example": "SomeName"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "SomeSurname"
+          },
+          "email": {
+            "type": "string",
+            "example": "example1@gmail.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "89021009989"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "2019-05-17"
+          },
+          "passportSerie": {
+            "type": "string",
+            "example": "ABC 1234"
+          },
+          "passportNumber": {
+            "type": "string",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "example": "SomePassword"
+          }
+        }
+      },
+      "UserLongData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "firstName": {
+            "type": "string",
+            "example": "SomeName"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "SomeSurname"
+          },
+          "email": {
+            "type": "string",
+            "example": "example1@gmail.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "89021009989"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "example": "2019-05-17"
+          },
+          "passportSerie": {
+            "type": "string",
+            "example": "ABC 1234"
+          },
+          "passportNumber": {
+            "type": "string",
+            "example": "123456"
+          },
+          "password": {
+            "type": "string",
+            "example": "SomePassword"
+          },
+          "image": {
+            "type": "string",
+            "example": "Image Path"
+          }
+        }
+      },
+      "Flight": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "departure": {
+            "type": "string",
+            "example": "Heathrow Airport"
+          },
+          "departure_city": {
+            "type": "string",
+            "example": "London"
+          },
+          "arrival": {
+            "type": "string",
+            "example": "Berlin Tegel Airport"
+          },
+          "arrival_city": {
+            "type": "string",
+            "example": "Berlin"
+          },
+          "departure_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2024-12-30T13:00:00Z"
+          },
+          "arrival_date": {
+            "type": "string",
+            "format": "date",
+            "example": "2024-12-30T19:00:00Z"
+          },
+          "price": {
+            "type": "string",
+            "example": "$400.00"
+          },
+          "availableSeats": {
+            "type": "integer",
+            "example": 278
+          }
+        }
+      },
+      "BookFlight": {
+        "type": "object",
+        "properties": {
+          "flightId": {
+            "type": "integer",
+            "example": 1
+          },
+          "passengerId": {
+            "type": "integer",
+            "example": 2
+          },
+          "status": {
+            "type": "string",
+            "example": "booked"
+          },
+          "row": {
+            "type": "string",
+            "example": "A"
+          },
+          "seat": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
+      "Seat": {
+        "type": "object",
+        "properties": {
+          "row": {
+            "type": "string"
+          },
+          "seat": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "departure": {
+            "type": "string",
+            "example": "Heathrow Airport"
+          },
+          "departure_city": {
+            "type": "string",
+            "example": "London"
+          },
+          "arrival": {
+            "type": "string",
+            "example": "Berlin Tegel Airport"
+          },
+          "arrival_city": {
+            "type": "string",
+            "example": "Berlin"
+          },
+          "departure_date": {
+            "type": "string",
+            "example": "2024-12-30T13:00:00Z"
+          },
+          "arrival_date": {
+            "type": "string",
+            "example": "2024-12-30T19:00:00Z"
+          },
+          "price": {
+            "type": "string",
+            "example": "$400.00"
+          },
+          "status": {
+            "type": "string",
+            "example": "booked"
+          },
+          "row": {
+            "type": "string",
+            "example": "A"
+          },
+          "seat": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
+      "FlightControl": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "aircraft_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "aircraft_name": {
+            "type": "string",
+            "example": "Boeing 787"
+          },
+          "airline_id": {
+            "type": "integer",
+            "example": 3
+          },
+          "airline_name": {
+            "type": "string",
+            "example": "Japan Airlines"
+          },
+          "departure_id": {
+            "type": "integer",
+            "example": 4
+          },
+          "departure_airport": {
+            "type": "string",
+            "example": "John F. Kennedy International Airport"
+          },
+          "departure_city": {
+            "type": "string",
+            "example": "London"
+          },
+          "departure_country": {
+            "type": "string",
+            "example": "UK"
+          },
+          "destination_id": {
+            "type": "integer",
+            "example": "5"
+          },
+          "destination_airport": {
+            "type": "string",
+            "example": "Berlin Tegel Airport"
+          },
+          "destination_city": {
+            "type": "string",
+            "example": "Berlin"
+          },
+          "destination_country": {
+            "type": "string",
+            "example": "Germany"
+          },
+          "departure_datetime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-12-30T13:00:00Z"
+          },
+          "arrival_datetime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-12-30T16:00:00Z"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "example": "$400.00"
+          },
+          "booking_count": {
+            "type": "integer",
+            "example": 15
+          }
+        }
+      },
+      "AirlineAircrafts": {
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "integer",
+            "example": 1
+          },
+          "airlineName": {
+            "type": "string",
+            "example": "Japan Airlines"
+          },
+          "aircraftId": {
+            "type": "integer",
+            "example": 5
+          },
+          "aircraftName": {
+            "type": "string",
+            "example": "Boeing 787"
+          }
+        }
+      },
+      "Airport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "John F. Kennedy International Airport"
+          }
+        }
+      },
+      "FlightCreate": {
+        "type": "object",
+        "properties": {
+          "aircraft_id": {
+            "type": "integer",
+            "example": 1
+          },
+          "airline_id": {
+            "type": "integer",
+            "example": 2
+          },
+          "departure_id": {
+            "type": "integer",
+            "example": 3
+          },
+          "destination_id": {
+            "type": "integer",
+            "example": 4
+          },
+          "departure_datetime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-12-30T13:00:00Z"
+          },
+          "arrival_datetime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-12-30T16:00:00Z"
+          },
+          "price": {
+            "type": "number",
+            "format": "float",
+            "example": 400
+          }
+        }
+      }
+    }
+  }
+}`
+
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+var SwaggerInfo = &swag.Spec{
+	Version:          "2.0",
+	Host:             "",
+	BasePath:         "",
+	Schemes:          []string{},
+	Title:            "Flight Booking API",
+	InfoInstanceName: "swagger",
+	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
+}
+
+func init() {
+	swag.Register(SwaggerInfo.InstanceName(), SwaggerInfo)
+}

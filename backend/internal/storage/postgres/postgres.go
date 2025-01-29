@@ -249,8 +249,8 @@ func (db *Db) CancelFlightByID(flightId int, userID int) error {
 	return nil
 }
 
-func (db *Db) GetAllFlights() ([]types.FlightControl, error) {
-	rows, err := db.db.Query(Queries.GetFlightList)
+func (db *Db) GetAllFlights(limit, offset int) ([]types.FlightControl, error) {
+	rows, err := db.db.Query(Queries.GetFlightList, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -276,6 +276,7 @@ func (db *Db) GetAllFlights() ([]types.FlightControl, error) {
 			&flight.DepartureDateTime,
 			&flight.ArrivalDateTime,
 			&flight.Price,
+			&flight.BookingCount,
 		)
 		if err != nil {
 			return nil, err
@@ -373,4 +374,16 @@ func (db *Db) CreateFlight(flight types.FlightCreate) error {
 	_, err := db.db.Exec(Queries.CreateFlight, flight.AircraftId, flight.DepartureId, flight.DestinationId,
 		flight.DepartureDateTime, flight.ArrivalDateTime, flight.Price)
 	return err
+}
+
+func (db *Db) TotalFlightsCount() (int, error) {
+	var count int
+	query := Queries.GetTotalFlightsCount
+	
+	err := db.db.QueryRow(query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

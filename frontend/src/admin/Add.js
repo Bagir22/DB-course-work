@@ -21,8 +21,10 @@ const AddFlightPage = () => {
     const currentDate = new Date().toISOString().slice(0, 16);
 
     useEffect(() => {
-        // Загружаем авиакомпании и самолеты
-        axios.get(`http://localhost:8080/api/airlinesaircrafts`)
+        const token = localStorage.getItem('token');
+        axios.get(`http://localhost:8080/auth/airlinesaircrafts`, {
+            headers: { Authorization: `${token}` }
+            })
             .then((response) => {
                 const data = response.data;
 
@@ -36,7 +38,6 @@ const AddFlightPage = () => {
 
                 setAirlinesAndAircrafts(airlinesGrouped);
 
-                // Извлекаем уникальные авиакомпании
                 const uniqueAirlines = Object.keys(airlinesGrouped).map((key) => ({
                     airline_id: parseInt(key),
                     airline_name: airlinesGrouped[key][0].airline_name,
@@ -47,8 +48,9 @@ const AddFlightPage = () => {
                 console.error('Error loading airlines and aircrafts:', error);
             });
 
-        // Загружаем аэропорты
-        axios.get('http://localhost:8080/api/airports')
+        axios.get('http://localhost:8080/auth/airports', {
+            headers: { Authorization: `${token}` }
+            })
             .then((response) => {
                 setAirports(response.data);
             })
@@ -58,7 +60,6 @@ const AddFlightPage = () => {
     }, []);
 
     useEffect(() => {
-        // Фильтруем самолеты на основе выбранной авиакомпании
         if (flight.airline_id) {
             const filtered = airlinesAndAircrafts[flight.airline_id] || [];
             setFilteredAircrafts(filtered);
@@ -68,6 +69,7 @@ const AddFlightPage = () => {
     }, [flight.airline_id, airlinesAndAircrafts]);
 
     const handleSave = () => {
+        const token = localStorage.getItem('token');
         const formattedFlight = {
             ...flight,
             departure_datetime: new Date(flight.departure_datetime).toISOString(),
@@ -76,10 +78,12 @@ const AddFlightPage = () => {
 
         console.log(flight);
 
-        axios.post('http://localhost:8080/admin/flights', formattedFlight)
+        axios.post('http://localhost:8080/admin/flights', formattedFlight, {
+            headers: { Authorization: `${token}` }
+        })
             .then(() => {
                 alert('Flight added successfully!');
-                navigate('/admin/flights');
+                navigate('/admin');
             })
             .catch((error) => {
                 console.error('Error adding flight:', error);
@@ -90,7 +94,6 @@ const AddFlightPage = () => {
         <div className="container mt-5">
             <h1 className="mb-4 text-center">Add Flight</h1>
             <form className="bg-light p-4 rounded shadow">
-                {/* Выбор авиакомпании */}
                 <div className="mb-3">
                     <label className="form-label">Airline Name</label>
                     <select
@@ -101,7 +104,7 @@ const AddFlightPage = () => {
                             setFlight({
                                 ...flight,
                                 airline_id: selectedAirlineId,
-                                aircraft_id: '', // сбрасываем самолет при смене авиакомпании
+                                aircraft_id: '',
                             });
                         }}
                     >
@@ -114,7 +117,6 @@ const AddFlightPage = () => {
                     </select>
                 </div>
 
-                {/* Выбор самолета */}
                 <div className="mb-3">
                     <label className="form-label">Aircraft Name</label>
                     <select
@@ -135,7 +137,6 @@ const AddFlightPage = () => {
                     </select>
                 </div>
 
-                {/* Выбор аэропорта отправления */}
                 <div className="mb-3">
                     <label className="form-label">Departure Airport</label>
                     <select
@@ -152,7 +153,6 @@ const AddFlightPage = () => {
                     </select>
                 </div>
 
-                {/* Выбор аэропорта прибытия */}
                 <div className="mb-3">
                     <label className="form-label">Arrival Airport</label>
                     <select
@@ -169,7 +169,6 @@ const AddFlightPage = () => {
                     </select>
                 </div>
 
-                {/* Ввод времени отправления */}
                 <div className="mb-3">
                     <label className="form-label">Departure Date</label>
                     <input
@@ -181,7 +180,6 @@ const AddFlightPage = () => {
                     />
                 </div>
 
-                {/* Ввод времени прибытия */}
                 <div className="mb-3">
                     <label className="form-label">Arrival Date</label>
                     <input
@@ -193,7 +191,6 @@ const AddFlightPage = () => {
                     />
                 </div>
 
-                {/* Ввод цены */}
                 <div className="mb-3">
                     <label className="form-label">Price</label>
                     <input
@@ -204,7 +201,6 @@ const AddFlightPage = () => {
                     />
                 </div>
 
-                {/* Кнопка сохранения */}
                 <button
                     type="button"
                     className="btn btn-primary w-100"
@@ -216,7 +212,8 @@ const AddFlightPage = () => {
                         !flight.arrival_datetime ||
                         !flight.price ||
                         !flight.departure_id ||
-                        !flight.arrival_id
+                        !flight.arrival_id ||
+                        new Date(flight.arrival_datetime) <= new Date(flight.departure_datetime)
                     }
                 >
                     Add Flight
